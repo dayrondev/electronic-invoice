@@ -118,7 +118,7 @@ export const refreshToken = async (oldRefreshToken: string) => {
 };
 
 export const signout = async () => {
-  backendFetch(`${BACKEND_URL}/auth/signout`, {
+  backendFetch("auth/signout", {
     method: "POST",
   });
   await deleteSession();
