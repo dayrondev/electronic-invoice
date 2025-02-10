@@ -71,7 +71,7 @@ export async function signin(
   }
 
   const result = await response.json();
-  console.log({ result });
+
   await createSession({
     user: {
       id: result.id,
