@@ -32,11 +32,12 @@ export class AuthService {
   async validateLocalUser(email: string, password: string) {
     const user = await this.userService.findByEmail(email);
     if (!user) throw new UnauthorizedException('User not found!');
+
     const isPasswordMatched = await verify(user.password, password);
     if (!isPasswordMatched)
       throw new UnauthorizedException('Invalid Credentials!');
 
-    return { id: user.id, name: user.name, role: user.role };
+    return { id: user.id, name: user.name, email: user.email, role: user.role };
   }
 
   async login(user: User) {
@@ -72,7 +73,13 @@ export class AuthService {
   async validateJwtUser(userId: string) {
     const user = await this.userService.findOne(userId);
     if (!user) throw new UnauthorizedException('User not found!');
-    const currentUser = { id: user.id, role: user.role };
+
+    const currentUser = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    };
     return currentUser;
   }
 
