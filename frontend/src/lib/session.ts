@@ -2,20 +2,9 @@
 
 import { jwtVerify, SignJWT } from "jose";
 import { cookies } from "next/headers";
-import { Role } from "./type";
+import { Session } from "@/types/session.type";
 
 const SESSION_COOKIE_NAME = "session";
-
-export type Session = {
-  user: {
-    id: string;
-    name: string;
-    role: Role;
-  };
-  accessToken: string;
-  refreshToken: string;
-};
-
 const secretKey = process.env.SESSION_SECRET_KEY!;
 const encodedKey = new TextEncoder().encode(secretKey);
 

@@ -2,15 +2,18 @@
 
 import { redirect } from "next/navigation";
 import { BACKEND_URL, FRONTEND_URL } from "./constants";
-import { SignupFormSchema, FormState, LoginFormSchema } from "./type";
 import { createSession, deleteSession } from "./session";
-import { backendFetch } from "./backend-fetch";
+import { backendFetch } from "./api";
+import { SignupSchema } from "@/schemas/signup.schema";
+import { SignupState } from "@/types/signup-state.type";
+import { LoginState } from "@/types/login-state.type";
+import { LoginSchema } from "@/schemas/login.schema";
 
 export async function signup(
-  _state: FormState,
+  _state: SignupState,
   formData: FormData
-): Promise<FormState> {
-  const validationFields = SignupFormSchema.safeParse({
+): Promise<SignupState> {
+  const validationFields = SignupSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
     password: formData.get("password"),
@@ -40,10 +43,10 @@ export async function signup(
 }
 
 export async function signin(
-  _state: FormState,
+  _state: LoginState,
   formData: FormData
-): Promise<FormState> {
-  const validatedFields = LoginFormSchema.safeParse({
+): Promise<LoginState> {
+  const validatedFields = LoginSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
   });
