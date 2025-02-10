@@ -9,7 +9,7 @@ import { UserService } from 'src/user/user.service';
 import { hash, verify } from 'argon2';
 import { AuthJwtPayload } from './types/auth-jwt-payload';
 import { JwtService } from '@nestjs/jwt';
-import { Role } from '@prisma/client';
+import { User } from '@prisma/client';
 import refreshConfig from './config/refresh.config';
 import { ConfigType } from '@nestjs/config';
 
@@ -39,14 +39,18 @@ export class AuthService {
     return { id: user.id, name: user.name, role: user.role };
   }
 
-  async login(userId: string, name: string, role: Role) {
-    const { accessToken, refreshToken } = await this.generateTokens(userId);
+  async login(user: User) {
+    const { accessToken, refreshToken } = await this.generateTokens(user.id);
     const hashedRefreshToken = await hash(refreshToken);
-    await this.userService.updateHashedRefreshToken(userId, hashedRefreshToken);
+    await this.userService.updateHashedRefreshToken(
+      user.id,
+      hashedRefreshToken,
+    );
     return {
-      id: userId,
-      name: name,
-      role,
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
       accessToken,
       refreshToken,
     };
@@ -91,13 +95,18 @@ export class AuthService {
     return currentUser;
   }
 
-  async refreshToken(userId: string, name: string) {
-    const { accessToken, refreshToken } = await this.generateTokens(userId);
+  async refreshToken(user: User) {
+    const { accessToken, refreshToken } = await this.generateTokens(user.id);
     const hashedRefreshToken = await hash(refreshToken);
-    await this.userService.updateHashedRefreshToken(userId, hashedRefreshToken);
+    await this.userService.updateHashedRefreshToken(
+      user.id,
+      hashedRefreshToken,
+    );
     return {
-      id: userId,
-      name: name,
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
       accessToken,
       refreshToken,
     };

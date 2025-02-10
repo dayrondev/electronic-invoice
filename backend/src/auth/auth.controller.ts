@@ -18,6 +18,7 @@ import { Response } from 'express';
 import { FRONTEND_URL } from './config/constants';
 import { Public } from './decorators/public.decorator';
 import { Roles } from './decorators/roles.decorator';
+import { RequestWithUser } from './types/request-with-user.interface';
 
 // @UseGuards(RolesGuard)
 // @UseGuards(JwtAuthGuard)
@@ -37,13 +38,13 @@ export class AuthController {
   @Public()
   @UseGuards(LocalAuthGuard)
   @Post('signin')
-  async login(@Request() req: Request & { user: User }) {
-    return this.authService.login(req.user.id, req.user.name, req.user.role);
+  async login(@Request() req: RequestWithUser) {
+    return this.authService.login(req.user);
   }
 
   @Roles('ADMIN') // 'ADMIN', 'EDITOR', ...
   @Get('protected')
-  getAll(@Request() req: Request & { user: User }) {
+  getAll(@Request() req: RequestWithUser) {
     return {
       message: `Now you can access this protected API. This is your user ID ${req.user.id}`,
     };
@@ -52,8 +53,8 @@ export class AuthController {
   @Public()
   @UseGuards(RefreshAuthGuard)
   @Post('refresh')
-  refreshToken(@Request() req: Request & { user: User }) {
-    return this.authService.refreshToken(req.user.id, req.user.name);
+  refreshToken(@Request() req: RequestWithUser) {
+    return this.authService.refreshToken(req.user);
   }
 
   @Public()
@@ -65,14 +66,9 @@ export class AuthController {
   @UseGuards(GoogleAuthGuard)
   @Get('google/callback')
   async googleCallback(@Request() req: { user: User }, @Res() res: Response) {
-    // console.log('Google User', req.user);
-    const resopnse = await this.authService.login(
-      req.user.id,
-      req.user.name,
-      req.user.role,
-    );
+    const resopnse = await this.authService.login(req.user);
     res.redirect(
-      `${FRONTEND_URL}/api/auth/google/callback?userId=${resopnse.id}&name=${resopnse.name}&accessToken=${resopnse.accessToken}&refreshToken=${resopnse.refreshToken}&role=${resopnse.role}`,
+      `${FRONTEND_URL}/api/auth/google/callback?userId=${resopnse.id}&name=${resopnse.name}&email=${resopnse.email}&accessToken=${resopnse.accessToken}&refreshToken=${resopnse.refreshToken}&role=${resopnse.role}`,
     );
   }
 
