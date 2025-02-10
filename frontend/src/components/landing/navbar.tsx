@@ -9,8 +9,8 @@ import {
 } from "@/components/ui/sheet";
 import Link from "next/link";
 import { getSession } from "@/lib/session";
-import { navigationMenuTriggerStyle } from "../ui/navigation-menu";
-import { cn } from "@/lib/utils";
+// import { navigationMenuTriggerStyle } from "../ui/navigation-menu";
+// import { cn } from "@/lib/utils";
 import { signout } from "@/lib/auth";
 
 const logo = {
@@ -31,7 +31,7 @@ const Navbar = async () => {
               <img src={logo.src} className="w-8" alt={logo.alt} />
               <span className="text-lg font-semibold">{logo.title}</span>
             </div>
-            <div className="flex items-center">
+            {/* <div className="flex items-center">
               <Link
                 className={cn(
                   "text-muted-foreground",
@@ -68,7 +68,7 @@ const Navbar = async () => {
               >
                 Profile
               </Link>
-            </div>
+            </div> */}
           </div>
           <div className="flex gap-2">
             {!session || !session.user ? (
@@ -116,7 +116,7 @@ const Navbar = async () => {
                     </div>
                   </SheetTitle>
                 </SheetHeader>
-                <div className="mb-6 mt-6 flex flex-col gap-4">
+                {/* <div className="mb-6 mt-6 flex flex-col gap-4">
                   <Link href="/" className="font-semibold">
                     Home
                   </Link>
@@ -126,7 +126,7 @@ const Navbar = async () => {
                   <Link href="/profile" className="font-semibold">
                     Profile
                   </Link>
-                </div>
+                </div> */}
                 <div className="flex flex-col gap-3 mt-10">
                   {!session || !session.user ? (
                     <>

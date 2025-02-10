@@ -78,7 +78,7 @@ export async function signin(
     refreshToken: result.refreshToken,
   });
 
-  redirect("/");
+  redirect("/application");
 }
 
 export const refreshToken = async (oldRefreshToken: string) => {
