@@ -9,7 +9,7 @@ import { UserService } from 'src/user/user.service';
 import { hash, verify } from 'argon2';
 import { AuthJwtPayload } from './types/auth-jwt-payload';
 import { JwtService } from '@nestjs/jwt';
-import { Role } from '@prisma/client';
+import { User } from '@prisma/client';
 import refreshConfig from './config/refresh.config';
 import { ConfigType } from '@nestjs/config';
 
@@ -32,21 +32,26 @@ export class AuthService {
   async validateLocalUser(email: string, password: string) {
     const user = await this.userService.findByEmail(email);
     if (!user) throw new UnauthorizedException('User not found!');
+
     const isPasswordMatched = await verify(user.password, password);
     if (!isPasswordMatched)
       throw new UnauthorizedException('Invalid Credentials!');
 
-    return { id: user.id, name: user.name, role: user.role };
+    return { id: user.id, name: user.name, email: user.email, role: user.role };
   }
 
-  async login(userId: string, name: string, role: Role) {
-    const { accessToken, refreshToken } = await this.generateTokens(userId);
+  async login(user: User) {
+    const { accessToken, refreshToken } = await this.generateTokens(user.id);
     const hashedRefreshToken = await hash(refreshToken);
-    await this.userService.updateHashedRefreshToken(userId, hashedRefreshToken);
+    await this.userService.updateHashedRefreshToken(
+      user.id,
+      hashedRefreshToken,
+    );
     return {
-      id: userId,
-      name: name,
-      role,
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
       accessToken,
       refreshToken,
     };
@@ -68,7 +73,13 @@ export class AuthService {
   async validateJwtUser(userId: string) {
     const user = await this.userService.findOne(userId);
     if (!user) throw new UnauthorizedException('User not found!');
-    const currentUser = { id: user.id, role: user.role };
+
+    const currentUser = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    };
     return currentUser;
   }
 
@@ -91,13 +102,18 @@ export class AuthService {
     return currentUser;
   }
 
-  async refreshToken(userId: string, name: string) {
-    const { accessToken, refreshToken } = await this.generateTokens(userId);
+  async refreshToken(user: User) {
+    const { accessToken, refreshToken } = await this.generateTokens(user.id);
     const hashedRefreshToken = await hash(refreshToken);
-    await this.userService.updateHashedRefreshToken(userId, hashedRefreshToken);
+    await this.userService.updateHashedRefreshToken(
+      user.id,
+      hashedRefreshToken,
+    );
     return {
-      id: userId,
-      name: name,
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
       accessToken,
       refreshToken,
     };

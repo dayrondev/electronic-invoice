@@ -14,7 +14,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 
-export default function Application() {
+export default async function Application() {
   return (
     <SidebarProvider>
       <AppSidebar />

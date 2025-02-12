@@ -12,6 +12,7 @@ import { getSession } from "@/lib/session";
 // import { navigationMenuTriggerStyle } from "../ui/navigation-menu";
 // import { cn } from "@/lib/utils";
 import { signout } from "@/lib/auth";
+import { ModeToggle } from "../mode-toggle";
 
 const logo = {
   url: "https://www.shadcnblocks.com",
@@ -71,6 +72,7 @@ const Navbar = async () => {
             </div> */}
           </div>
           <div className="flex gap-2">
+            <ModeToggle size="sm" />
             {!session || !session.user ? (
               <>
                 <Link
@@ -128,6 +130,7 @@ const Navbar = async () => {
                   </Link>
                 </div> */}
                 <div className="flex flex-col gap-3 mt-10">
+                  <ModeToggle size="default" />
                   {!session || !session.user ? (
                     <>
                       <Link

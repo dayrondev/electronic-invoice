@@ -1,22 +1,26 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { BACKEND_URL, FRONTEND_URL } from "./constants";
-import { SignupFormSchema, FormState, LoginFormSchema } from "./type";
 import { createSession, deleteSession } from "./session";
-import { backendFetch } from "./backend-fetch";
+import { backendFetch } from "./api";
+import { SignupSchema } from "@/schemas/signup.schema";
+import { SignupState } from "@/types/signup-state.type";
+import { LoginState } from "@/types/login-state.type";
+import { LoginSchema } from "@/schemas/login.schema";
+import { User } from "@/types/user.type";
 
 export async function signup(
-  _state: FormState,
+  _state: SignupState,
   formData: FormData
-): Promise<FormState> {
-  const validationFields = SignupFormSchema.safeParse({
+): Promise<SignupState> {
+  const validationFields = SignupSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
     password: formData.get("password"),
   });
   if (!validationFields.success) {
     return {
+      ok: false,
       error: validationFields.error.flatten().fieldErrors,
     };
   }
@@ -30,25 +34,27 @@ export async function signup(
   });
   if (!response.ok) {
     return {
+      ok: false,
       message:
         response.status === 409
           ? "The user is already existed!"
           : response.statusText,
     };
   }
-  redirect("/login");
+  return { ok: true };
 }
 
 export async function signin(
-  _state: FormState,
+  _state: LoginState,
   formData: FormData
-): Promise<FormState> {
-  const validatedFields = LoginFormSchema.safeParse({
+): Promise<LoginState> {
+  const validatedFields = LoginSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
   });
   if (!validatedFields.success) {
     return {
+      ok: false,
       error: validatedFields.error.flatten().fieldErrors,
     };
   }
@@ -62,23 +68,31 @@ export async function signin(
   });
   if (!response.ok) {
     return {
+      ok: false,
       message:
         response.status === 401 ? "Invalid Credentials!" : response.statusText,
     };
   }
 
   const result = await response.json();
+
+  const user: User = {
+    id: result.id,
+    name: result.name,
+    email: result.email,
+    role: result.role,
+  };
+
   await createSession({
-    user: {
-      id: result.id,
-      name: result.name,
-      role: result.role,
-    },
+    user,
     accessToken: result.accessToken,
     refreshToken: result.refreshToken,
   });
 
-  redirect("/application");
+  return {
+    ok: true,
+    user,
+  };
 }
 
 export const refreshToken = async (oldRefreshToken: string) => {
@@ -118,9 +132,17 @@ export const refreshToken = async (oldRefreshToken: string) => {
 };
 
 export const signout = async () => {
-  backendFetch("auth/signout", {
+  const result = await backendFetch("auth/signout", {
     method: "POST",
   });
-  await deleteSession();
-  redirect("/");
+  if (result.ok) {
+    await deleteSession();
+    return {
+      ok: true,
+    };
+  }
+  return {
+    ok: false,
+    message: "Failed to sign out",
+  };
 };
