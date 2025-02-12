@@ -26,10 +26,13 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { signout } from "@/lib/auth";
-import { User } from "@/types/user.type";
+import { useUserStore } from "@/store/user.store";
 
-export function NavUser({ user }: { user: User }) {
+export function NavUser() {
   const { isMobile } = useSidebar();
+
+  const user = useUserStore((state) => state.user);
+  if (!user) return null;
 
   return (
     <SidebarMenu>

@@ -24,7 +24,6 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { User } from "@/types/user.type";
 
 // This is sample data.
 const data = {
@@ -156,11 +155,7 @@ const data = {
   ],
 };
 
-type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
-  user: User;
-};
-
-export function AppSidebar({ user, ...props }: AppSidebarProps) {
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -171,7 +166,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={user} />
+        <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
