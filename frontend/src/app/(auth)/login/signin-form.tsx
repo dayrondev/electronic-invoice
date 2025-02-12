@@ -1,5 +1,6 @@
 "use client";
 
+import { redirect } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   Card,
@@ -17,12 +18,19 @@ import { AlertCircle } from "lucide-react";
 import SubmitButton from "@/components/ui/custom-submit-button";
 import { buttonVariants } from "@/components/ui/button";
 import { BACKEND_URL } from "@/lib/constants";
+import { useUserStore } from "@/store/user.store";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const setUser = useUserStore((state) => state.setUser);
   const [state, action] = useActionState(signin, undefined);
+
+  if (state?.ok && state.user) {
+    setUser(state.user);
+    redirect("/application");
+  }
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>

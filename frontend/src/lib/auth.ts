@@ -1,6 +1,5 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { BACKEND_URL, FRONTEND_URL } from "./constants";
 import { createSession, deleteSession } from "./session";
 import { backendFetch } from "./api";
@@ -8,6 +7,7 @@ import { SignupSchema } from "@/schemas/signup.schema";
 import { SignupState } from "@/types/signup-state.type";
 import { LoginState } from "@/types/login-state.type";
 import { LoginSchema } from "@/schemas/login.schema";
+import { User } from "@/types/user.type";
 
 export async function signup(
   _state: SignupState,
@@ -20,6 +20,7 @@ export async function signup(
   });
   if (!validationFields.success) {
     return {
+      ok: false,
       error: validationFields.error.flatten().fieldErrors,
     };
   }
@@ -33,13 +34,14 @@ export async function signup(
   });
   if (!response.ok) {
     return {
+      ok: false,
       message:
         response.status === 409
           ? "The user is already existed!"
           : response.statusText,
     };
   }
-  redirect("/login");
+  return { ok: true };
 }
 
 export async function signin(
@@ -52,6 +54,7 @@ export async function signin(
   });
   if (!validatedFields.success) {
     return {
+      ok: false,
       error: validatedFields.error.flatten().fieldErrors,
     };
   }
@@ -65,6 +68,7 @@ export async function signin(
   });
   if (!response.ok) {
     return {
+      ok: false,
       message:
         response.status === 401 ? "Invalid Credentials!" : response.statusText,
     };
@@ -72,18 +76,23 @@ export async function signin(
 
   const result = await response.json();
 
+  const user: User = {
+    id: result.id,
+    name: result.name,
+    email: result.email,
+    role: result.role,
+  };
+
   await createSession({
-    user: {
-      id: result.id,
-      name: result.name,
-      email: result.email,
-      role: result.role,
-    },
+    user,
     accessToken: result.accessToken,
     refreshToken: result.refreshToken,
   });
 
-  redirect("/application");
+  return {
+    ok: true,
+    user,
+  };
 }
 
 export const refreshToken = async (oldRefreshToken: string) => {
@@ -123,9 +132,17 @@ export const refreshToken = async (oldRefreshToken: string) => {
 };
 
 export const signout = async () => {
-  backendFetch("auth/signout", {
+  const result = await backendFetch("auth/signout", {
     method: "POST",
   });
-  await deleteSession();
-  redirect("/");
+  if (result.ok) {
+    await deleteSession();
+    return {
+      ok: true,
+    };
+  }
+  return {
+    ok: false,
+    message: "Failed to sign out",
+  };
 };

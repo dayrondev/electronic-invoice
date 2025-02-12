@@ -1,5 +1,6 @@
 export type SignupState =
   | {
+      ok: boolean;
       error?: {
         name?: string[];
         email?: string[];

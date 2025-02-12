@@ -27,12 +27,22 @@ import {
 } from "@/components/ui/sidebar";
 import { signout } from "@/lib/auth";
 import { useUserStore } from "@/store/user.store";
+import { redirect } from "next/navigation";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
 
+  const removeUser = useUserStore((state) => state.removeUser);
   const user = useUserStore((state) => state.user);
   if (!user) return null;
+
+  const handleLogout = async () => {
+    const result = await signout();
+    if (result.ok) {
+      removeUser();
+      redirect("/");
+    }
+  };
 
   return (
     <SidebarMenu>
@@ -95,7 +105,7 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={signout}>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut />
               Log out
             </DropdownMenuItem>

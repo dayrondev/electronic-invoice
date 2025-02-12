@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { AlertCircle } from "lucide-react";
+import { redirect } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   Card,
@@ -22,6 +23,10 @@ export function SignupForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  if (state?.ok) {
+    redirect("/login");
+  }
 
   return (
     <div className={cn("flex flex-col gap-6")}>
