@@ -19,34 +19,29 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { getCompaniesByUser } from "@/lib/company";
+import { Company } from "@/types/company.type";
 
-export function TeamSwitcher({
-  teams,
-}: {
-  teams: {
-    name: string;
-    logo: React.ElementType;
-    plan: string;
-  }[];
-}) {
+export function TeamSwitcher() {
   const { isMobile } = useSidebar();
-  const [activeTeam, setActiveTeam] = React.useState(teams[0]);
 
-  const [companies, setCompanies] = React.useState([]);
-  const [activeCompany, setActiveCompany] = React.useState(undefined);
+  const [companies, setCompanies] = React.useState<Company[]>([]);
+  const [activeCompany, setActiveCompany] = React.useState<Company | undefined>(
+    undefined
+  );
 
   React.useEffect(() => {
-    const fetchData = async () => {
+    const fetchCompanies = async () => {
       const result = await getCompaniesByUser();
       if (result.ok && result.data.length) {
         setCompanies(result.data);
         setActiveCompany(result.data[0]);
       }
     };
-    fetchData();
+    fetchCompanies();
   }, []);
 
   if (!activeCompany) return null;
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -56,9 +51,6 @@ export function TeamSwitcher({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              {/* <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <activeTeam.logo className="size-4" />
-              </div> */}
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                 {activeCompany.companyType === "LEGAL" ? (
                   <Building2 className="size-4" />
@@ -93,9 +85,6 @@ export function TeamSwitcher({
                 onClick={() => setActiveCompany(team)}
                 className="gap-2 p-2"
               >
-                {/* <div className="flex size-6 items-center justify-center rounded-sm border">
-                  <team.logo className="size-4 shrink-0" />
-                </div> */}
                 <div className="flex size-6 items-center justify-center rounded-sm border">
                   {team.companyType === "LEGAL" ? (
                     <Building2 className="size-4" />
