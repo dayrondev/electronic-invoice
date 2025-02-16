@@ -14,6 +14,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MoreHorizontal } from "lucide-react";
 import { ArrowUpDown } from "lucide-react";
+// import { DataTableColumnHeader } from "@/components/data-table/column";
 
 export const columns: ColumnDef<Product>[] = [
   {
@@ -51,10 +52,24 @@ export const columns: ColumnDef<Product>[] = [
         </Button>
       );
     },
+    // header: ({ column }) => (
+    //   <DataTableColumnHeader column={column} title="Name" />
+    // ),
   },
   {
     accessorKey: "description",
-    header: "Description",
+    // header: "Description",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Description
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
   },
   {
     accessorKey: "priceInCents",
