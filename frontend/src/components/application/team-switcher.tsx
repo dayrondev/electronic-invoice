@@ -20,14 +20,15 @@ import {
 } from "@/components/ui/sidebar";
 import { getCompaniesByUser } from "@/lib/company";
 import { Company } from "@/types/company.type";
+import { useApplicationStore } from "@/store/application.store";
 
 export function TeamSwitcher() {
-  const { isMobile } = useSidebar();
-
-  const [companies, setCompanies] = React.useState<Company[]>([]);
-  const [activeCompany, setActiveCompany] = React.useState<Company | undefined>(
-    undefined
+  const setActiveCompany = useApplicationStore(
+    (state) => state.setActiveCompany
   );
+  const activeCompany = useApplicationStore((state) => state.activeCompany);
+  const { isMobile } = useSidebar();
+  const [companies, setCompanies] = React.useState<Company[]>([]);
 
   React.useEffect(() => {
     const fetchCompanies = async () => {
@@ -38,7 +39,7 @@ export function TeamSwitcher() {
       }
     };
     fetchCompanies();
-  }, []);
+  }, [setActiveCompany]);
 
   if (!activeCompany) return null;
 
