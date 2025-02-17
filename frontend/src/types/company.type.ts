@@ -19,3 +19,9 @@ export enum CompanyStatus {
   BLOCKED = "BLOCKED",
   DELETED = "DELETED",
 }
+
+export type CompanyProductsPaginatedPayload = {
+  companyId: string;
+  page: number;
+  pageSize: number;
+};

@@ -1,3 +1,4 @@
+import { CompanyProductsPaginatedPayload } from "@/types/company.type";
 import { backendFetch } from "./api";
 
 export const getCompaniesByUser = async () => {
@@ -36,7 +37,7 @@ export const getPaginatedProductsByCompany = async ({
   companyId,
   page,
   pageSize,
-}) => {
+}: CompanyProductsPaginatedPayload) => {
   const result = await backendFetch(
     `company/${companyId}/products?page=${page}&pageSize=${pageSize}`,
     {

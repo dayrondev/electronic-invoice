@@ -1,20 +1,17 @@
 "use client";
 
 import { getPaginatedProductsByCompany } from "@/lib/company";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useApplicationStore } from "@/store/application.store";
 import { Product } from "@/types/product.type";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
+import { PaginationMeta } from "@/types/pagination.type";
 
 export default function PaginatedProductsPage() {
   const activeCompany = useApplicationStore((state) => state.activeCompany);
   const [data, setData] = useState<Product[]>([]);
-  const [meta, setMeta] = useState<{
-    currentPage: number;
-    totalPages: number;
-    totalItems: number;
-  }>({
+  const [meta, setMeta] = useState<PaginationMeta>({
     currentPage: 1,
     totalPages: 1,
     totalItems: 0,
@@ -22,23 +19,26 @@ export default function PaginatedProductsPage() {
 
   const pageSize = 10;
 
-  const fetchProducts = async (page: number, pageSize: number) => {
-    if (activeCompany) {
-      const result = await getPaginatedProductsByCompany({
-        companyId: activeCompany.id,
-        page,
-        pageSize,
-      });
-      if (result.ok) {
-        setData(result.data.data);
-        setMeta(result.data.meta);
+  const fetchProducts = useCallback(
+    async (page: number, pageSize: number) => {
+      if (activeCompany) {
+        const result = await getPaginatedProductsByCompany({
+          companyId: activeCompany.id,
+          page,
+          pageSize,
+        });
+        if (result.ok) {
+          setData(result.data.data);
+          setMeta(result.data.meta);
+        }
       }
-    }
-  };
+    },
+    [activeCompany]
+  );
 
   useEffect(() => {
-    fetchProducts(1, 10); // Cargar la primera página al inicio
-  }, [activeCompany]);
+    if (activeCompany) fetchProducts(1, 10);
+  }, [activeCompany, fetchProducts]);
 
   const handlePaginationChange = (page: number, pageSize: number) => {
     fetchProducts(page, pageSize);
