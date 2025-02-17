@@ -36,6 +36,10 @@ const data = {
           url: "/application/products",
         },
         {
+          title: "Paginated List",
+          url: "/application/products/list",
+        },
+        {
           title: "New",
           url: "/application/products/new",
         },

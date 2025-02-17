@@ -17,9 +17,32 @@ export const getCompaniesByUser = async () => {
 };
 
 export const getProductsByCompany = async (companyId: string) => {
-  const result = await backendFetch(`company/${companyId}/products`, {
+  const result = await backendFetch(`company/${companyId}/products/all`, {
     method: "GET",
   });
+  if (result.ok) {
+    return {
+      ok: true,
+      data: result.data,
+    };
+  }
+  return {
+    ok: false,
+    message: `Error fetching products for company ${companyId}}`,
+  };
+};
+
+export const getPaginatedProductsByCompany = async ({
+  companyId,
+  page,
+  pageSize,
+}) => {
+  const result = await backendFetch(
+    `company/${companyId}/products?page=${page}&pageSize=${pageSize}`,
+    {
+      method: "GET",
+    }
+  );
   if (result.ok) {
     return {
       ok: true,

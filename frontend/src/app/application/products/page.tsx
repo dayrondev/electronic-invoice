@@ -6,7 +6,7 @@ import { DataTable } from "./data-table";
 import { useEffect, useState } from "react";
 import { useApplicationStore } from "@/store/application.store";
 
-export default function DemoPage() {
+export default function ProductsPage() {
   const activeCompany = useApplicationStore((state) => state.activeCompany);
   const [products, setProducts] = useState(null);
 
