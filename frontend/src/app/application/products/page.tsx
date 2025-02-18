@@ -31,7 +31,7 @@ export default function ProductsPage() {
     );
 
   return (
-    <div className="container mx-auto p-10 pt-0">
+    <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
       <DataTable columns={columns} data={products} />
     </div>
   );
