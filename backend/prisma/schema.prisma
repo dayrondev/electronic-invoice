@@ -13,16 +13,105 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id                 String  @id @default(uuid())
-  email              String  @unique
-  name               String
-  password           String
-  hashedRefreshToken String?
-  role               Role    @default(USER)
-}
-
 enum Role {
   ADMIN
   USER
+}
+
+enum UserStatus {
+  REGISTERED
+  ACTIVE
+  BLOCKED
+  DELETED
+}
+
+enum CompanyType {
+  INDIVIDUAL
+  LEGAL
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  APPROVED
+  PAID
+  CANCELLED
+}
+
+enum CompanyStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+  DELETED
+}
+
+model User {
+  id                 String     @id @default(uuid())
+  email              String     @unique
+  name               String
+  password           String
+  hashedRefreshToken String?
+  role               Role       @default(USER)
+  status             UserStatus @default(REGISTERED)
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  companies          Company[]
+}
+
+model Company {
+  id                String             @id @default(uuid())
+  nif               String             @unique
+  name              String
+  address           String
+  companyType       CompanyType
+  status            CompanyStatus      @default(ACTIVE)
+  userId            String
+  user              User               @relation(fields: [userId], references: [id])
+  products          Product[]
+  invoicesSent      Invoice[]          @relation("CompanyAsIssuer")
+  invoicesReceived  Invoice[]          @relation("CompanyAsReceiver")
+  supplierRelations CustomerRelation[] @relation("CustomerToSuppliers")
+  customerRelations CustomerRelation[] @relation("CompanyToCustomers")
+}
+
+model CustomerRelation {
+  id         String  @id @default(uuid())
+  companyId  String
+  company    Company @relation("CompanyToCustomers", fields: [companyId], references: [id])
+  customerId String
+  customer   Company @relation("CustomerToSuppliers", fields: [customerId], references: [id])
+}
+
+model Invoice {
+  id                 String        @id @default(uuid())
+  number             String        @unique
+  issueDate          DateTime
+  dueDate            DateTime
+  totalAmountInCents Int
+  status             InvoiceStatus @default(DRAFT)
+  issuerId           String
+  issuer             Company       @relation("CompanyAsIssuer", fields: [issuerId], references: [id])
+  receiverId         String
+  receiver           Company       @relation("CompanyAsReceiver", fields: [receiverId], references: [id])
+  items              InvoiceItem[]
+}
+
+model Product {
+  id           String        @id @default(uuid())
+  name         String
+  description  String?
+  priceInCents Int
+  companyId    String
+  company      Company       @relation(fields: [companyId], references: [id])
+  items        InvoiceItem[]
+}
+
+model InvoiceItem {
+  id               String  @id @default(uuid())
+  invoiceId        String
+  productId        String
+  quantity         Int
+  unitPriceInCents Int
+  invoice          Invoice @relation(fields: [invoiceId], references: [id])
+  product          Product @relation(fields: [productId], references: [id])
 }

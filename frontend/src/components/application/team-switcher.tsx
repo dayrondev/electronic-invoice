@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ChevronsUpDown, Plus } from "lucide-react";
+import { ChevronsUpDown, Plus, Building2, PersonStanding } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -18,18 +18,30 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { getCompaniesByUser } from "@/lib/company";
+import { Company } from "@/types/company.type";
+import { useApplicationStore } from "@/store/application.store";
 
-export function TeamSwitcher({
-  teams,
-}: {
-  teams: {
-    name: string;
-    logo: React.ElementType;
-    plan: string;
-  }[];
-}) {
+export function TeamSwitcher() {
+  const setActiveCompany = useApplicationStore(
+    (state) => state.setActiveCompany
+  );
+  const activeCompany = useApplicationStore((state) => state.activeCompany);
   const { isMobile } = useSidebar();
-  const [activeTeam, setActiveTeam] = React.useState(teams[0]);
+  const [companies, setCompanies] = React.useState<Company[]>([]);
+
+  React.useEffect(() => {
+    const fetchCompanies = async () => {
+      const result = await getCompaniesByUser();
+      if (result.ok && result.data.length) {
+        setCompanies(result.data);
+        setActiveCompany(result.data[0]);
+      }
+    };
+    fetchCompanies();
+  }, [setActiveCompany]);
+
+  if (!activeCompany) return null;
 
   return (
     <SidebarMenu>
@@ -41,13 +53,20 @@ export function TeamSwitcher({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <activeTeam.logo className="size-4" />
+                {activeCompany.companyType === "LEGAL" ? (
+                  <Building2 className="size-4" />
+                ) : (
+                  <PersonStanding className="size-5" />
+                )}
               </div>
+
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">
-                  {activeTeam.name}
+                  {activeCompany.name}
                 </span>
-                <span className="truncate text-xs">{activeTeam.plan}</span>
+                <span className="truncate text-xs">
+                  {activeCompany.companyType}
+                </span>
               </div>
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
@@ -61,14 +80,18 @@ export function TeamSwitcher({
             <DropdownMenuLabel className="text-xs text-muted-foreground">
               Teams
             </DropdownMenuLabel>
-            {teams.map((team, index) => (
+            {companies.map((team, index) => (
               <DropdownMenuItem
                 key={team.name}
-                onClick={() => setActiveTeam(team)}
+                onClick={() => setActiveCompany(team)}
                 className="gap-2 p-2"
               >
                 <div className="flex size-6 items-center justify-center rounded-sm border">
-                  <team.logo className="size-4 shrink-0" />
+                  {team.companyType === "LEGAL" ? (
+                    <Building2 className="size-4" />
+                  ) : (
+                    <PersonStanding className="size-5" />
+                  )}
                 </div>
                 {team.name}
                 <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
