@@ -22,7 +22,7 @@ Este proyecto está compuesto por un **backend** utilizando **Nest.js** y un **f
 3. Configura las credenciales de Google en la [Consola de Google](https://console.cloud.google.com/). En la sección de **Credenciales**, establece:
 
    - **Authorized JavaScript origins**: Agrega el origen del backend (`http://localhost:3001`).
-   - **Authorized redirect URIs**: Agrega la URL de redirección del backend (`http://localhost:3001/api/v1/auth/google/callback`).
+   - **Authorized redirect URIs**: Agrega la URL de redirección del backend (`http://localhost:3001/api/auth/google/callback`).
 
 4. Obtén las credenciales de OAuth 2.0 y añade las siguientes variables al archivo `.env`:
 
