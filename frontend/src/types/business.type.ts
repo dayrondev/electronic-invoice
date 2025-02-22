@@ -3,8 +3,13 @@ export type BusinessState =
       ok: boolean;
       error?: {
         name?: string[];
-        cif?: string[];
+        taxIdentification?: string[];
         residenceType?: string[];
+        street?: string[];
+        postalCode?: string[];
+        town?: string[];
+        province?: string[];
+        countryId?: string[];
       };
       message?: string;
     }
@@ -13,12 +18,12 @@ export type BusinessState =
 export type Business = {
   id: string;
   name: string;
-  nif: string;
+  taxIdentification: string;
   personType: PersonType;
   residenceType: ResidenceType;
   status: BusinessStatus;
+  addressId: string;
   userId: string;
-  address: string;
 };
 
 enum PersonType {

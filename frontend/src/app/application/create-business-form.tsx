@@ -1,8 +1,8 @@
 "use client";
 
-import { useActionState, useState } from "react";
-import { AlertCircle } from "lucide-react";
-import { redirect } from "next/navigation";
+import { useActionState, useEffect, useState } from "react";
+import { AlertCircle, Check, ChevronDown } from "lucide-react";
+import { redirect, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   Card,
@@ -25,17 +25,57 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createBusiness } from "@/lib/business";
+import { getCountries } from "@/lib/country";
+import { Country } from "@/types/country.type";
+
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
 
 export function CreateBusinessForm() {
   const [state, action] = useActionState(createBusiness, undefined);
+  const router = useRouter();
 
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("");
+
+  const [countries, setCountries] = useState<Country[]>([]);
   const [name, setName] = useState("");
   const [cif, setCif] = useState("");
+  const [street, setStreet] = useState("");
+  const [postalCode, setPostalCode] = useState("");
+  const [town, setTown] = useState("");
+  const [province, setProvince] = useState("");
+  const [countryId, setCountryId] = useState("");
   // const [residenceType, setResidenceType] = useState("");
 
-  if (state?.ok) {
-    redirect("/login");
-  }
+  useEffect(() => {
+    const fetchCountries = async () => {
+      const result = await getCountries();
+      if (result.ok) {
+        setCountries(result.data);
+      }
+    };
+
+    fetchCountries();
+  }, []);
+
+  useEffect(() => {
+    if (state?.ok) {
+      router.refresh();
+    }
+  }, [state, router]);
 
   const handleLogout = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -57,7 +97,12 @@ export function CreateBusinessForm() {
         </CardHeader>
         <CardContent>
           <form action={action}>
-            <div className="flex flex-col gap-6">
+            {/* <div className="flex flex-col gap-6"> */}
+            <div
+              className={cn(
+                "grid gap-6 sm:grid-cols-1 xl:grid-cols-2" // Add grid layout for lg screens
+              )}
+            >
               {state?.message && (
                 <Alert variant="destructive">
                   <AlertCircle className="h-4 w-4" />
@@ -81,22 +126,26 @@ export function CreateBusinessForm() {
                 )}
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="cif">Código de Identificación Fiscal</Label>
+                <Label htmlFor="taxIdentification">
+                  Código de Identificación Fiscal
+                </Label>
                 <Input
-                  id="cif"
-                  name="cif"
-                  type="cif"
-                  placeholder="B99999999"
+                  id="taxIdentification"
+                  name="taxIdentification"
+                  type="text"
+                  placeholder="B12345678"
                   required
                   value={cif}
                   onChange={(e) => setCif(e.target.value)}
                 />
-                {state?.error?.cif && (
-                  <p className="text-xs text-red-700">{state.error.cif}</p>
+                {state?.error?.taxIdentification && (
+                  <p className="text-xs text-red-700">
+                    {state.error.taxIdentification}
+                  </p>
                 )}
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="cif">Tipo de Residencia</Label>
+                <Label htmlFor="residenceType">Tipo de Residencia</Label>
                 <Select name="residenceType">
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Selecciona" />
@@ -106,23 +155,142 @@ export function CreateBusinessForm() {
                       <SelectItem value="E">Extranjero</SelectItem>
                       <SelectItem value="R">Residente (en España)</SelectItem>
                       <SelectItem value="U">
-                        Residente en la Unión Europea (excepto España)
+                        Residente en la UE (no España)
                       </SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>
                 {state?.error?.residenceType && (
-                  <div className="text-xs text-red-700">
-                    <p>Tipo de Residencia:</p>
-                    <ul>
-                      {state.error.residenceType.map((error) => (
-                        <li key={error}>{error}</li>
-                      ))}
-                    </ul>
-                  </div>
+                  <p className="text-xs text-red-700">
+                    {state.error.residenceType}
+                  </p>
                 )}
               </div>
-              <SubmitButton>Enviar</SubmitButton>
+              <div className="grid gap-2">
+                <Label htmlFor="street">Calle</Label>
+                <Input
+                  id="street"
+                  name="street"
+                  type="text"
+                  placeholder="Calle Pablo Almodóvar 23"
+                  required
+                  value={street}
+                  onChange={(e) => setStreet(e.target.value)}
+                />
+                {state?.error?.street && (
+                  <p className="text-xs text-red-700">{state.error.street}</p>
+                )}
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="postalCode">Código Postal</Label>
+                <Input
+                  id="postalCode"
+                  name="postalCode"
+                  type="text"
+                  placeholder="12345"
+                  required
+                  value={postalCode}
+                  onChange={(e) => setPostalCode(e.target.value)}
+                />
+                {state?.error?.postalCode && (
+                  <p className="text-xs text-red-700">
+                    {state.error.postalCode}
+                  </p>
+                )}
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="town">Municipio</Label>
+                <Input
+                  id="town"
+                  name="town"
+                  type="text"
+                  placeholder="Madrid"
+                  required
+                  value={town}
+                  onChange={(e) => setTown(e.target.value)}
+                />
+                {state?.error?.town && (
+                  <p className="text-xs text-red-700">{state.error.town}</p>
+                )}
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="province">Provincia</Label>
+                <Input
+                  id="province"
+                  name="province"
+                  type="text"
+                  placeholder="Madrid"
+                  required
+                  value={province}
+                  onChange={(e) => setProvince(e.target.value)}
+                />
+                {state?.error?.province && (
+                  <p className="text-xs text-red-700">{state.error.province}</p>
+                )}
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="countryId">País</Label>
+                <Popover open={open} onOpenChange={setOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={open}
+                      className="w-full justify-between font-normal px-3"
+                    >
+                      {value
+                        ? countries.find((item) => item.name === value)?.name
+                        : "Selecciona el país..."}
+                      <ChevronDown className="opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[200px] p-0">
+                    <Command>
+                      <CommandInput
+                        placeholder="Buscar país..."
+                        className="h-9"
+                      />
+                      <CommandList>
+                        <CommandEmpty>No se econtraron países.</CommandEmpty>
+                        <CommandGroup>
+                          {countries.map((item) => (
+                            <CommandItem
+                              key={item.id}
+                              value={item.name}
+                              onSelect={(currentValue) => {
+                                setValue(
+                                  currentValue === value ? "" : currentValue
+                                );
+                                setCountryId(item.id);
+                                setOpen(false);
+                              }}
+                            >
+                              {item.name}
+                              <Check
+                                className={cn(
+                                  "ml-auto",
+                                  value === item.name
+                                    ? "opacity-100"
+                                    : "opacity-0"
+                                )}
+                              />
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+                <input type="hidden" name="countryId" value={countryId} />
+                {state?.error?.countryId && (
+                  <p className="text-xs text-red-700">
+                    {state.error.countryId}
+                  </p>
+                )}
+              </div>
+              <div className="col-span-full">
+                <SubmitButton>Enviar</SubmitButton>
+              </div>
             </div>
             <div className="mt-4 text-center text-sm">
               O si lo prefieres puedes{" "}

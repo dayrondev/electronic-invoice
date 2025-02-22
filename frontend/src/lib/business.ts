@@ -11,8 +11,13 @@ export async function createBusiness(
 ): Promise<BusinessState> {
   const validatedFields = CreateBusinessSchema.safeParse({
     name: formData.get("name"),
-    cif: formData.get("cif"),
+    taxIdentification: formData.get("taxIdentification"),
     residenceType: formData.get("residenceType"),
+    street: formData.get("street"),
+    town: formData.get("town"),
+    province: formData.get("province"),
+    postalCode: formData.get("postalCode"),
+    countryId: formData.get("countryId"),
   });
   if (!validatedFields.success) {
     return {
@@ -20,28 +25,24 @@ export async function createBusiness(
       error: validatedFields.error.flatten().fieldErrors,
     };
   }
-  console.log(JSON.stringify(validatedFields.data));
+
+  const result = await backendFetch("business", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(validatedFields.data),
+  });
+
+  if (!result.ok) {
+    return {
+      ok: false,
+      message: "Error creating business",
+    };
+  }
   return {
     ok: true,
   };
-  // const result = await backendFetch("business", {
-  //   method: "POST",
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //   },
-  //   body: JSON.stringify(validatedFields.data),
-  // });
-
-  // if (!result.ok) {
-  //   return {
-  //     ok: false,
-  //     message: "Error creating business",
-  //   };
-  // }
-  // return {
-  //   ok: true,
-  //   data: result.data,
-  // };
 }
 
 export const getBusinessesByUser = async () => {
