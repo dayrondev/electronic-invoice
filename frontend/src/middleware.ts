@@ -6,7 +6,9 @@ const publicRoutes = ["/", "/login", "/signup"];
 
 export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
-  const isProtectedRoute = protectedRoutes.includes(path);
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    path.startsWith(route)
+  );
   const isPublicRoute = publicRoutes.includes(path);
 
   const session = await getSession();
