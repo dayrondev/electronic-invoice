@@ -25,26 +25,6 @@ enum UserStatus {
   DELETED
 }
 
-enum CompanyType {
-  INDIVIDUAL
-  LEGAL
-}
-
-enum InvoiceStatus {
-  DRAFT
-  SENT
-  APPROVED
-  PAID
-  CANCELLED
-}
-
-enum CompanyStatus {
-  ACTIVE
-  INACTIVE
-  BLOCKED
-  DELETED
-}
-
 model User {
   id                 String     @id @default(uuid())
   email              String     @unique
@@ -55,63 +35,61 @@ model User {
   status             UserStatus @default(REGISTERED)
   createdAt          DateTime   @default(now())
   updatedAt          DateTime   @updatedAt
-  companies          Company[]
+  businesses         Business[]
 }
 
-model Company {
-  id                String             @id @default(uuid())
-  nif               String             @unique
+enum PersonType {
+  F // Física
+  J // Jurídica
+}
+
+enum ResidenceType {
+  E // Extranjero (Fuera Unión Europea)
+  R // Residente (en España)
+  U // Residente en la Unión Europea (excepto España)
+}
+
+enum BusinessStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+  DELETED
+}
+
+model Business {
+  id                String         @id @default(uuid())
   name              String
-  address           String
-  companyType       CompanyType
-  status            CompanyStatus      @default(ACTIVE)
+  taxIdentification String         @unique
+  personType        PersonType     @default(J)
+  residenceType     ResidenceType
+  status            BusinessStatus @default(ACTIVE)
+  addressId         String
+  address           Address        @relation(fields: [addressId], references: [id])
   userId            String
-  user              User               @relation(fields: [userId], references: [id])
-  products          Product[]
-  invoicesSent      Invoice[]          @relation("CompanyAsIssuer")
-  invoicesReceived  Invoice[]          @relation("CompanyAsReceiver")
-  supplierRelations CustomerRelation[] @relation("CustomerToSuppliers")
-  customerRelations CustomerRelation[] @relation("CompanyToCustomers")
+  user              User           @relation(fields: [userId], references: [id])
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
 }
 
-model CustomerRelation {
-  id         String  @id @default(uuid())
-  companyId  String
-  company    Company @relation("CompanyToCustomers", fields: [companyId], references: [id])
-  customerId String
-  customer   Company @relation("CustomerToSuppliers", fields: [customerId], references: [id])
+model Country {
+  id        String    @id @default(uuid())
+  name      String
+  iso2      String    @unique
+  iso3      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  addresses Address[]
 }
 
-model Invoice {
-  id                 String        @id @default(uuid())
-  number             String        @unique
-  issueDate          DateTime
-  dueDate            DateTime
-  totalAmountInCents Int
-  status             InvoiceStatus @default(DRAFT)
-  issuerId           String
-  issuer             Company       @relation("CompanyAsIssuer", fields: [issuerId], references: [id])
-  receiverId         String
-  receiver           Company       @relation("CompanyAsReceiver", fields: [receiverId], references: [id])
-  items              InvoiceItem[]
-}
-
-model Product {
-  id           String        @id @default(uuid())
-  name         String
-  description  String?
-  priceInCents Int
-  companyId    String
-  company      Company       @relation(fields: [companyId], references: [id])
-  items        InvoiceItem[]
-}
-
-model InvoiceItem {
-  id               String  @id @default(uuid())
-  invoiceId        String
-  productId        String
-  quantity         Int
-  unitPriceInCents Int
-  invoice          Invoice @relation(fields: [invoiceId], references: [id])
-  product          Product @relation(fields: [productId], references: [id])
+model Address {
+  id         String     @id @default(uuid())
+  street     String
+  postalCode String
+  town       String
+  province   String
+  countryId  String
+  country    Country    @relation(fields: [countryId], references: [id])
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  Business   Business[]
 }

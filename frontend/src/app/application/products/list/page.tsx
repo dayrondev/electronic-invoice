@@ -1,6 +1,6 @@
 "use client";
 
-import { getPaginatedProductsByCompany } from "@/lib/company";
+import { getPaginatedProductsByBusiness } from "@/lib/business";
 import { useCallback, useEffect, useState } from "react";
 import { useApplicationStore } from "@/store/application.store";
 import { Product } from "@/types/product.type";
@@ -22,7 +22,7 @@ export default function PaginatedProductsPage() {
   const fetchProducts = useCallback(
     async (page: number, pageSize: number) => {
       if (activeCompany) {
-        const result = await getPaginatedProductsByCompany({
+        const result = await getPaginatedProductsByBusiness({
           companyId: activeCompany.id,
           page,
           pageSize,

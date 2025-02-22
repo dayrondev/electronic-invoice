@@ -3,10 +3,10 @@
 import { BACKEND_URL, FRONTEND_URL } from "./constants";
 import { createSession, deleteSession } from "./session";
 import { backendFetch } from "./api";
-import { SignupSchema } from "@/schemas/signup.schema";
-import { SignupState } from "@/types/signup-state.type";
-import { LoginState } from "@/types/login-state.type";
-import { LoginSchema } from "@/schemas/login.schema";
+import { SignupSchema } from "@/schemas/auth.schema";
+import { SignupState } from "@/types/auth.type";
+import { LoginState } from "@/types/auth.type";
+import { LoginSchema } from "@/schemas/auth.schema";
 import { User } from "@/types/user.type";
 
 export async function signup(

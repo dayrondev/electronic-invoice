@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Company } from "@/types/company.type";
+import { Company } from "@/types/business.type";
 
 interface ApplicationState {
   activeCompany: Company | null;

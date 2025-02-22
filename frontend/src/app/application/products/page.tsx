@@ -1,6 +1,6 @@
 "use client";
 
-import { getProductsByCompany } from "@/lib/company";
+import { getProductsByBusiness } from "@/lib/business";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { useEffect, useState } from "react";
@@ -13,7 +13,7 @@ export default function ProductsPage() {
   useEffect(() => {
     const fetchProducts = async () => {
       if (activeCompany) {
-        const result = await getProductsByCompany(activeCompany.id);
+        const result = await getProductsByBusiness(activeCompany.id);
         if (result.ok) {
           setProducts(result.data);
         }

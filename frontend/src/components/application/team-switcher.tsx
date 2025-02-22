@@ -18,8 +18,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { getCompaniesByUser } from "@/lib/company";
-import { Company } from "@/types/company.type";
+import { getBusinessesByUser } from "@/lib/business";
+import { Company } from "@/types/business.type";
 import { useApplicationStore } from "@/store/application.store";
 
 export function TeamSwitcher() {
@@ -32,7 +32,7 @@ export function TeamSwitcher() {
 
   React.useEffect(() => {
     const fetchCompanies = async () => {
-      const result = await getCompaniesByUser();
+      const result = await getBusinessesByUser();
       if (result.ok && result.data.length) {
         setCompanies(result.data);
         setActiveCompany(result.data[0]);

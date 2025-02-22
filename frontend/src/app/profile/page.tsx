@@ -1,9 +1,10 @@
 import { getProfile } from "@/lib/actions";
+import { LOGOUT_URL } from "@/lib/constants";
 import { redirect } from "next/navigation";
 
 export default async function Profile() {
   const { ok, data } = await getProfile();
-  if (!ok) redirect("/api/auth/logout");
+  if (!ok) redirect(LOGOUT_URL);
 
   return (
     <>
