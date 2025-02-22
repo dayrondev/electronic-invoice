@@ -26,6 +26,10 @@ export class BusinessService {
           userId,
         },
       });
+      await prisma.user.update({
+        data: { hasBusiness: true },
+        where: { id: userId },
+      });
 
       return business;
     });

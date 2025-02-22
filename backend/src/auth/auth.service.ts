@@ -37,7 +37,13 @@ export class AuthService {
     if (!isPasswordMatched)
       throw new UnauthorizedException('Invalid Credentials!');
 
-    return { id: user.id, name: user.name, email: user.email, role: user.role };
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      hasBusiness: user.hasBusiness,
+      role: user.role,
+    };
   }
 
   async login(user: User) {
@@ -51,6 +57,7 @@ export class AuthService {
       id: user.id,
       name: user.name,
       email: user.email,
+      hasBusiness: user.hasBusiness,
       role: user.role,
       accessToken,
       refreshToken,
@@ -78,6 +85,7 @@ export class AuthService {
       id: user.id,
       name: user.name,
       email: user.email,
+      hasBusiness: user.hasBusiness,
       role: user.role,
     };
     return currentUser;
@@ -113,6 +121,7 @@ export class AuthService {
       id: user.id,
       name: user.name,
       email: user.email,
+      hasBusiness: user.hasBusiness,
       role: user.role,
       accessToken,
       refreshToken,

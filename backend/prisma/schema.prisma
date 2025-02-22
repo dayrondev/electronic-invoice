@@ -33,6 +33,7 @@ model User {
   hashedRefreshToken String?
   role               Role       @default(USER)
   status             UserStatus @default(REGISTERED)
+  hasBusiness        Boolean    @default(false)
   createdAt          DateTime   @default(now())
   updatedAt          DateTime   @updatedAt
   businesses         Business[]

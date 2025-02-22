@@ -13,27 +13,12 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { getBusinessesByUser } from "@/lib/business";
-import { CreateBusinessForm } from "./create-business-form";
 
 export default async function LayoutApplication({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const result = await getBusinessesByUser();
-  if (!result.ok) return null;
-
-  if (!result.data.length) {
-    return (
-      <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-        <div className="w-full max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl">
-          <CreateBusinessForm />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <SidebarProvider>
       <AppSidebar />

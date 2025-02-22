@@ -3,20 +3,34 @@
 import { jwtVerify, SignJWT } from "jose";
 import { cookies } from "next/headers";
 import { Session } from "@/types/session.type";
+import { User } from "@/types/user.type";
 
 const SESSION_COOKIE_NAME = "session";
 const secretKey = process.env.SESSION_SECRET_KEY!;
 const encodedKey = new TextEncoder().encode(secretKey);
 
-export async function createSession(payload: Session) {
-  const expiredAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-
-  const session = await new SignJWT(payload)
+export async function encrypt(payload: Session) {
+  return new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("7d")
     .sign(encodedKey);
+}
 
+export async function decrypt(session: string | undefined = "") {
+  try {
+    const { payload } = await jwtVerify(session, encodedKey, {
+      algorithms: ["HS256"],
+    });
+    return payload;
+  } catch (error) {
+    console.error("Failed to verify session", error);
+  }
+}
+
+export async function createSession(payload: Session) {
+  const expiredAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  const session = await encrypt(payload);
   const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE_NAME, session, {
     httpOnly: true,
@@ -32,15 +46,26 @@ export async function getSession() {
   const cookie = cookieStore.get(SESSION_COOKIE_NAME)?.value;
   if (!cookie) return null;
 
-  try {
-    const { payload } = await jwtVerify(cookie, encodedKey, {
-      algorithms: ["HS256"],
-    });
+  return await decrypt(cookie);
+}
 
-    return payload as Session;
-  } catch (err) {
-    console.error("Failed to verify the session", err);
-    return null;
+export async function updateSessionUser(userData: Partial<User>) {
+  const cookieStore = await cookies();
+  const cookie = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+  if (cookie) {
+    const sessionData = (await decrypt(cookie)) as Session;
+    if (sessionData) {
+      sessionData.user = { ...sessionData.user, ...userData };
+      const session = await encrypt(sessionData);
+      const expiredAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+      cookieStore.set(SESSION_COOKIE_NAME, session, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        expires: expiredAt,
+        sameSite: "lax",
+        path: "/",
+      });
+    }
   }
 }
 

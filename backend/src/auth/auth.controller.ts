@@ -68,7 +68,7 @@ export class AuthController {
   async googleCallback(@Request() req: { user: User }, @Res() res: Response) {
     const resopnse = await this.authService.login(req.user);
     res.redirect(
-      `${FRONTEND_URL}/api/auth/google/callback?userId=${resopnse.id}&name=${resopnse.name}&email=${resopnse.email}&accessToken=${resopnse.accessToken}&refreshToken=${resopnse.refreshToken}&role=${resopnse.role}`,
+      `${FRONTEND_URL}/api/auth/google/callback?userId=${resopnse.id}&name=${resopnse.name}&email=${resopnse.email}&hasBusiness=${resopnse.hasBusiness}&role=${resopnse.role}&accessToken=${resopnse.accessToken}&refreshToken=${resopnse.refreshToken}`,
     );
   }
 

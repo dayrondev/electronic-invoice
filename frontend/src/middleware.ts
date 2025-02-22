@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "./lib/session";
+import { Session } from "./types/session.type";
 
-const protectedRoutes = ["/application"];
+const REGISTER_BUSINESS_URL = "/register-business";
+
+const protectedRoutes = ["/application", REGISTER_BUSINESS_URL];
 const publicRoutes = ["/", "/login", "/signup"];
 
 export default async function middleware(req: NextRequest) {
@@ -11,9 +14,17 @@ export default async function middleware(req: NextRequest) {
   );
   const isPublicRoute = publicRoutes.includes(path);
 
-  const session = await getSession();
-  if (isProtectedRoute && !session?.user) {
-    return NextResponse.redirect(new URL("/login", req.nextUrl));
+  const session = (await getSession()) as Session;
+
+  if (isProtectedRoute) {
+    if (!session?.user)
+      return NextResponse.redirect(new URL("/login", req.nextUrl));
+
+    if (!session.user.hasBusiness && !path.startsWith(REGISTER_BUSINESS_URL))
+      return NextResponse.redirect(new URL(REGISTER_BUSINESS_URL, req.nextUrl));
+
+    if (session.user.hasBusiness && path.startsWith(REGISTER_BUSINESS_URL))
+      return NextResponse.redirect(new URL("/application", req.nextUrl));
   }
 
   if (isPublicRoute && session?.user) {

@@ -12,9 +12,18 @@ export async function GET(req: NextRequest) {
   const userId = searchParams.get("userId");
   const name = searchParams.get("name");
   const email = searchParams.get("email");
+  const hasBusiness = searchParams.get("hasBusiness");
   const role = searchParams.get("role");
 
-  if (!accessToken || !refreshToken || !userId || !name || !email || !role)
+  if (
+    !accessToken ||
+    !refreshToken ||
+    !userId ||
+    !name ||
+    !email ||
+    !hasBusiness ||
+    !role
+  )
     throw new Error("Google Ouath Failed!");
 
   await createSession({
@@ -22,6 +31,7 @@ export async function GET(req: NextRequest) {
       id: userId,
       name,
       email,
+      hasBusiness: hasBusiness === "true",
       role: role as Role,
     },
     accessToken,

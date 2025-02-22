@@ -42,6 +42,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
+import { updateSessionUser } from "@/lib/session";
 
 export function CreateBusinessForm() {
   const [state, action] = useActionState(createBusiness, undefined);
@@ -73,7 +74,7 @@ export function CreateBusinessForm() {
 
   useEffect(() => {
     if (state?.ok) {
-      router.refresh();
+      updateSessionUser({ hasBusiness: true }).then(() => router.refresh());
     }
   }, [state, router]);
 
@@ -257,7 +258,7 @@ export function CreateBusinessForm() {
                             <CommandItem
                               key={item.id}
                               value={item.name}
-                              onSelect={(currentValue) => {
+                              onSelect={(currentValue: string) => {
                                 setValue(
                                   currentValue === value ? "" : currentValue
                                 );

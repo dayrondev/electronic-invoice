@@ -80,6 +80,7 @@ export async function signin(
     id: result.id,
     name: result.name,
     email: result.email,
+    hasBusiness: result.hasBusiness,
     role: result.role,
   };
 

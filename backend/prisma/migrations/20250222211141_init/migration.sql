@@ -22,6 +22,7 @@ CREATE TABLE "User" (
     "hashedRefreshToken" TEXT,
     "role" "Role" NOT NULL DEFAULT 'USER',
     "status" "UserStatus" NOT NULL DEFAULT 'REGISTERED',
+    "hasBusiness" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
