@@ -42,7 +42,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { updateSessionUser } from "@/lib/session";
+import { updateUser } from "@/lib/session";
 
 export function CreateBusinessForm() {
   const [state, action] = useActionState(createBusiness, undefined);
@@ -74,7 +74,7 @@ export function CreateBusinessForm() {
 
   useEffect(() => {
     if (state?.ok) {
-      updateSessionUser({ hasBusiness: true }).then(() => router.refresh());
+      updateUser({ hasBusiness: true }).then(() => router.refresh());
     }
   }, [state, router]);
 

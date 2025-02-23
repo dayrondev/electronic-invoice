@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "./lib/session";
-import { Session } from "./types/session.type";
 
 const REGISTER_BUSINESS_URL = "/register-business";
 
@@ -14,7 +13,7 @@ export default async function middleware(req: NextRequest) {
   );
   const isPublicRoute = publicRoutes.includes(path);
 
-  const session = (await getSession()) as Session;
+  const session = await getSession();
 
   if (isProtectedRoute) {
     if (!session?.user)

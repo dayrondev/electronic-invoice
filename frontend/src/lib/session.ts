@@ -19,7 +19,7 @@ export async function encrypt(payload: Session) {
 
 export async function decrypt(session: string | undefined = "") {
   try {
-    const { payload } = await jwtVerify(session, encodedKey, {
+    const { payload } = await jwtVerify<Session>(session, encodedKey, {
       algorithms: ["HS256"],
     });
     return payload;
@@ -49,11 +49,11 @@ export async function getSession() {
   return await decrypt(cookie);
 }
 
-export async function updateSessionUser(userData: Partial<User>) {
+export async function updateUser(userData: Partial<User>) {
   const cookieStore = await cookies();
   const cookie = cookieStore.get(SESSION_COOKIE_NAME)?.value;
   if (cookie) {
-    const sessionData = (await decrypt(cookie)) as Session;
+    const sessionData = await decrypt(cookie);
     if (sessionData) {
       sessionData.user = { ...sessionData.user, ...userData };
       const session = await encrypt(sessionData);
@@ -84,7 +84,7 @@ export async function updateTokens({
   const cookie = cookieStore.get(SESSION_COOKIE_NAME)?.value;
   if (!cookie) return null;
 
-  const { payload } = await jwtVerify<Session>(cookie, encodedKey);
+  const payload = await decrypt(SESSION_COOKIE_NAME);
   if (!payload) throw new Error("Session not found");
 
   const newPayload: Session = {
