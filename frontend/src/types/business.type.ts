@@ -2,6 +2,7 @@ export type BusinessState =
   | {
       ok: boolean;
       error?: {
+        logo?: string[];
         name?: string[];
         taxIdentification?: string[];
         residenceType?: string[];
@@ -24,6 +25,7 @@ export type Business = {
   status: BusinessStatus;
   addressId: string;
   userId: string;
+  logo: string;
 };
 
 export enum PersonType {

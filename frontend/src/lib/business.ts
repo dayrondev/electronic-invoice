@@ -10,6 +10,7 @@ export async function createBusiness(
   formData: FormData
 ): Promise<BusinessState> {
   const validatedFields = CreateBusinessSchema.safeParse({
+    logo: formData.get("logo"),
     name: formData.get("name"),
     taxIdentification: formData.get("taxIdentification"),
     residenceType: formData.get("residenceType"),

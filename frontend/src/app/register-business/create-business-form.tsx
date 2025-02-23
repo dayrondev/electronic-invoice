@@ -1,7 +1,7 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
-import { AlertCircle, Check, ChevronDown } from "lucide-react";
+import { useActionState, useEffect, useRef, useState } from "react";
+import { AlertCircle, Check, ChevronDown, CircleX } from "lucide-react";
 import { redirect, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
@@ -43,6 +43,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { updateUser } from "@/lib/session";
+import Image from "next/image";
 
 export function CreateBusinessForm() {
   const [state, action] = useActionState(createBusiness, undefined);
@@ -52,6 +53,10 @@ export function CreateBusinessForm() {
   const [value, setValue] = useState("");
 
   const [countries, setCountries] = useState<Country[]>([]);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [logo, setLogo] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [cif, setCif] = useState("");
   const [street, setStreet] = useState("");
@@ -59,7 +64,6 @@ export function CreateBusinessForm() {
   const [town, setTown] = useState("");
   const [province, setProvince] = useState("");
   const [countryId, setCountryId] = useState("");
-  // const [residenceType, setResidenceType] = useState("");
 
   useEffect(() => {
     const fetchCountries = async () => {
@@ -74,7 +78,7 @@ export function CreateBusinessForm() {
 
   useEffect(() => {
     if (state?.ok) {
-      updateUser({ hasBusiness: true }).then(() => router.refresh());
+      //updateUser({ hasBusiness: true }).then(() => router.refresh());
     }
   }, [state, router]);
 
@@ -83,6 +87,25 @@ export function CreateBusinessForm() {
     const result = await signout();
     if (result.ok) {
       redirect("/");
+    }
+  };
+
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogo(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveLogo = () => {
+    setLogo(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""; // Restablece el valor del input file
     }
   };
 
@@ -99,11 +122,7 @@ export function CreateBusinessForm() {
         <CardContent>
           <form action={action}>
             {/* <div className="flex flex-col gap-6"> */}
-            <div
-              className={cn(
-                "grid gap-6 sm:grid-cols-1 xl:grid-cols-2" // Add grid layout for lg screens
-              )}
-            >
+            <div className={cn("grid gap-6 sm:grid-cols-1 xl:grid-cols-2")}>
               {state?.message && (
                 <Alert variant="destructive">
                   <AlertCircle className="h-4 w-4" />
@@ -111,6 +130,39 @@ export function CreateBusinessForm() {
                   <AlertDescription>{state.message}</AlertDescription>
                 </Alert>
               )}
+              <div className="grid gap-2 col-span-full">
+                <div>
+                  <Label htmlFor="logo">Logo</Label>
+                  <Input
+                    id="logo"
+                    name="logo"
+                    type="file"
+                    required
+                    ref={fileInputRef}
+                    onChange={handleLogoChange}
+                  />
+                  {logo && (
+                    <div className="my-8 relative flex items-center justify-center">
+                      <Image
+                        src={logo}
+                        alt="Preview"
+                        width={200}
+                        height={200}
+                      />
+                      <button
+                        onClick={handleRemoveLogo}
+                        className="absolute top-0 right-0 text-red-500 py-1 px-2"
+                        aria-label="Remove image"
+                      >
+                        <CircleX />
+                      </button>
+                    </div>
+                  )}
+                  {state?.error?.logo && (
+                    <p className="text-xs text-red-700">{state.error.logo}</p>
+                  )}
+                </div>
+              </div>
               <div className="grid gap-2">
                 <Label htmlFor="name">Denominación</Label>
                 <Input

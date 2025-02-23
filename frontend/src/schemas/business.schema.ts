@@ -1,6 +1,9 @@
 import { z } from "zod";
 
 export const CreateBusinessSchema = z.object({
+  logo: z
+    .instanceof(File)
+    .refine((file) => file.size > 0, { message: "Please choose a file." }),
   name: z
     .string()
     .min(2, {
