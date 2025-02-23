@@ -68,6 +68,7 @@ model Business {
   address           Address        @relation(fields: [addressId], references: [id])
   userId            String
   user              User           @relation(fields: [userId], references: [id])
+  logo              String
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
 }
