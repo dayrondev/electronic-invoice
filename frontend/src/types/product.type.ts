@@ -3,5 +3,5 @@ export type Product = {
   name: string;
   description: string;
   priceInCents: number;
-  companyId: string;
+  businessId: string;
 };

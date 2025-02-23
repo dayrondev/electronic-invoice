@@ -26,15 +26,15 @@ export type Business = {
   userId: string;
 };
 
-enum PersonType {
-  F = "INDIVIDUAL",
-  J = "LEGAL",
+export enum PersonType {
+  F = "F",
+  J = "J",
 }
 
-enum ResidenceType {
-  E = "FOREIGNER",
-  R = "RESIDENT_IN_ES",
-  U = "RESIDENT_IN_EU",
+export enum ResidenceType {
+  E = "E",
+  R = "R",
+  U = "U",
 }
 
 export enum BusinessStatus {

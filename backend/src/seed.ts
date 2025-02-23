@@ -6,9 +6,9 @@ const prisma = new PrismaClient();
 
 async function main() {
   console.log('Clearing tables...');
+  await prisma.business.deleteMany();
   await prisma.address.deleteMany();
   await prisma.country.deleteMany();
-  await prisma.business.deleteMany();
   await prisma.user.deleteMany();
 
   console.log('Inserting test data...');

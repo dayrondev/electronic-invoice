@@ -1,14 +1,14 @@
 import { create } from "zustand";
-import { Company } from "@/types/business.type";
+import { Business } from "@/types/business.type";
 
 interface ApplicationState {
-  activeCompany: Company | null;
-  setActiveCompany: (company: Company) => void;
-  removeActiveCompany: () => void;
+  activeBusiness: Business | null;
+  setActiveBusiness: (business: Business) => void;
+  removeActiveBusiness: () => void;
 }
 
 export const useApplicationStore = create<ApplicationState>()((set) => ({
-  activeCompany: null,
-  setActiveCompany: (activeCompany: Company) => set({ activeCompany }),
-  removeActiveCompany: () => set({ activeCompany: null }),
+  activeBusiness: null,
+  setActiveBusiness: (activeBusiness: Business) => set({ activeBusiness }),
+  removeActiveBusiness: () => set({ activeBusiness: null }),
 }));

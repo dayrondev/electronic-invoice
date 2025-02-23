@@ -9,7 +9,7 @@ import { DataTable } from "./data-table";
 import { PaginationMeta } from "@/types/pagination.type";
 
 export default function PaginatedProductsPage() {
-  const activeCompany = useApplicationStore((state) => state.activeCompany);
+  const activeBusiness = useApplicationStore((state) => state.activeBusiness);
   const [data, setData] = useState<Product[]>([]);
   const [meta, setMeta] = useState<PaginationMeta>({
     currentPage: 1,
@@ -21,9 +21,9 @@ export default function PaginatedProductsPage() {
 
   const fetchProducts = useCallback(
     async (page: number, pageSize: number) => {
-      if (activeCompany) {
+      if (activeBusiness) {
         const result = await getPaginatedProductsByBusiness({
-          companyId: activeCompany.id,
+          businessId: activeBusiness.id,
           page,
           pageSize,
         });
@@ -33,12 +33,12 @@ export default function PaginatedProductsPage() {
         }
       }
     },
-    [activeCompany]
+    [activeBusiness]
   );
 
   useEffect(() => {
-    if (activeCompany) fetchProducts(1, 10);
-  }, [activeCompany, fetchProducts]);
+    if (activeBusiness) fetchProducts(1, 10);
+  }, [activeBusiness, fetchProducts]);
 
   const handlePaginationChange = (page: number, pageSize: number) => {
     fetchProducts(page, pageSize);

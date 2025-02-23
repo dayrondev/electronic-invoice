@@ -68,7 +68,7 @@ export const getProductsByBusiness = async (businessId: string) => {
   if (!result.ok) {
     return {
       ok: false,
-      message: `Error fetching products for company ${businessId}}`,
+      message: `Error fetching products for business ${businessId}}`,
     };
   }
   return {
@@ -91,7 +91,7 @@ export const getPaginatedProductsByBusiness = async ({
   if (!result.ok) {
     return {
       ok: false,
-      message: `Error fetching products for company ${businessId}}`,
+      message: `Error fetching products for business ${businessId}}`,
     };
   }
   return {

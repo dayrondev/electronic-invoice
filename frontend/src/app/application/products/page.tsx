@@ -7,13 +7,13 @@ import { useEffect, useState } from "react";
 import { useApplicationStore } from "@/store/application.store";
 
 export default function ProductsPage() {
-  const activeCompany = useApplicationStore((state) => state.activeCompany);
+  const activeBusiness = useApplicationStore((state) => state.activeBusiness);
   const [products, setProducts] = useState(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
-      if (activeCompany) {
-        const result = await getProductsByBusiness(activeCompany.id);
+      if (activeBusiness) {
+        const result = await getProductsByBusiness(activeBusiness.id);
         if (result.ok) {
           setProducts(result.data);
         }
@@ -21,7 +21,7 @@ export default function ProductsPage() {
     };
 
     fetchProducts();
-  }, [activeCompany]);
+  }, [activeBusiness]);
 
   if (!products)
     return (

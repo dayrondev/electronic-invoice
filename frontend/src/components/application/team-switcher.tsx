@@ -19,29 +19,31 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { getBusinessesByUser } from "@/lib/business";
-import { Company } from "@/types/business.type";
+import { Business, PersonType } from "@/types/business.type";
 import { useApplicationStore } from "@/store/application.store";
 
 export function TeamSwitcher() {
-  const setActiveCompany = useApplicationStore(
-    (state) => state.setActiveCompany
+  const setActiveBusiness = useApplicationStore(
+    (state) => state.setActiveBusiness
   );
-  const activeCompany = useApplicationStore((state) => state.activeCompany);
+  const activeBusiness: Business | null = useApplicationStore(
+    (state) => state.activeBusiness
+  );
   const { isMobile } = useSidebar();
-  const [companies, setCompanies] = React.useState<Company[]>([]);
+  const [companies, setCompanies] = React.useState<Business[]>([]);
 
   React.useEffect(() => {
-    const fetchCompanies = async () => {
+    const fetchBusinesses = async () => {
       const result = await getBusinessesByUser();
       if (result.ok && result.data.length) {
         setCompanies(result.data);
-        setActiveCompany(result.data[0]);
+        setActiveBusiness(result.data[0]);
       }
     };
-    fetchCompanies();
-  }, [setActiveCompany]);
+    fetchBusinesses();
+  }, [setActiveBusiness]);
 
-  if (!activeCompany) return null;
+  if (!activeBusiness) return null;
 
   return (
     <SidebarMenu>
@@ -53,7 +55,7 @@ export function TeamSwitcher() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                {activeCompany.companyType === "LEGAL" ? (
+                {activeBusiness.personType === PersonType.J ? (
                   <Building2 className="size-4" />
                 ) : (
                   <PersonStanding className="size-5" />
@@ -62,10 +64,10 @@ export function TeamSwitcher() {
 
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">
-                  {activeCompany.name}
+                  {activeBusiness.name}
                 </span>
                 <span className="truncate text-xs">
-                  {activeCompany.companyType}
+                  {activeBusiness.taxIdentification}
                 </span>
               </div>
               <ChevronsUpDown className="ml-auto" />
@@ -83,11 +85,11 @@ export function TeamSwitcher() {
             {companies.map((team, index) => (
               <DropdownMenuItem
                 key={team.name}
-                onClick={() => setActiveCompany(team)}
+                onClick={() => setActiveBusiness(team)}
                 className="gap-2 p-2"
               >
                 <div className="flex size-6 items-center justify-center rounded-sm border">
-                  {team.companyType === "LEGAL" ? (
+                  {team.personType === PersonType.J ? (
                     <Building2 className="size-4" />
                   ) : (
                     <PersonStanding className="size-5" />
