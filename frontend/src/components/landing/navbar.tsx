@@ -13,6 +13,7 @@ import { getSession } from "@/lib/session";
 // import { cn } from "@/lib/utils";
 import { signout } from "@/lib/auth";
 import { ModeToggle } from "../mode-toggle";
+import { Session } from "@/types/session.type";
 
 const logo = {
   url: "https://www.shadcnblocks.com",
@@ -21,7 +22,7 @@ const logo = {
   title: "Shadcnblocks.com",
 };
 const Navbar = async () => {
-  const session = await getSession();
+  const session = (await getSession()) as Session;
 
   return (
     <section className="py-4">
