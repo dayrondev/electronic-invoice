@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { BusinessModule } from './business/business.module';
 import { ProductModule } from './product/product.module';
 import { CountryModule } from './country/country.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { CountryModule } from './country/country.module';
     BusinessModule,
     ProductModule,
     CountryModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
