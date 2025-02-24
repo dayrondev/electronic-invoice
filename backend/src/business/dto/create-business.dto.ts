@@ -1,4 +1,5 @@
-import { IsOptional, IsString } from 'class-validator';
+import { ResidenceType } from '@prisma/client';
+import { IsEnum, IsString } from 'class-validator';
 
 export class CreateBusinessDto {
   @IsString()
@@ -7,29 +8,21 @@ export class CreateBusinessDto {
   @IsString()
   taxIdentification: string;
 
-  @IsString()
-  @IsOptional()
-  personType;
+  @IsEnum(ResidenceType)
+  residenceType: ResidenceType;
 
   @IsString()
-  residenceType;
+  street: string;
 
   @IsString()
-  @IsOptional()
-  status;
+  postalCode: string;
 
   @IsString()
-  street;
+  town: string;
 
   @IsString()
-  postalCode;
+  province: string;
 
   @IsString()
-  town;
-
-  @IsString()
-  province;
-
-  @IsString()
-  countryId;
+  countryId: string;
 }

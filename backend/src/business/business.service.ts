@@ -24,7 +24,7 @@ export class BusinessService {
         file,
         CLOUDINARY_LOGO_FOLDER,
       );
-      logoUrl = uploadResponse.secure_url;
+      logoUrl = uploadResponse.secure_url as string;
     }
     return await this.prismaService.$transaction(async (prisma) => {
       const address = await prisma.address.create({
