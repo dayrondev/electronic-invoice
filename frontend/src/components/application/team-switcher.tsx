@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ChevronsUpDown, Plus, Building2, PersonStanding } from "lucide-react";
+import { ChevronsUpDown, Plus, PersonStanding } from "lucide-react";
 
 import {
   DropdownMenu,
