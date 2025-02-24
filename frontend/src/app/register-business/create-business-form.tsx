@@ -148,6 +148,7 @@ export function CreateBusinessForm() {
                         alt="Preview"
                         width={200}
                         height={200}
+                        className="bg-white"
                       />
                       <button
                         onClick={handleRemoveLogo}

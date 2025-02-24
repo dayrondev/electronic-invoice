@@ -21,6 +21,7 @@ import {
 import { getBusinessesByUser } from "@/lib/business";
 import { Business, PersonType } from "@/types/business.type";
 import { useApplicationStore } from "@/store/application.store";
+import Image from "next/image";
 
 export function TeamSwitcher() {
   const setActiveBusiness = useApplicationStore(
@@ -54,9 +55,15 @@ export function TeamSwitcher() {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary bg-white text-sidebar-primary-foreground">
                 {activeBusiness.personType === PersonType.J ? (
-                  <Building2 className="size-4" />
+                  // <Building2 className="size-4" />
+                  <Image
+                    src={activeBusiness.logo}
+                    alt={activeBusiness.name}
+                    width={100}
+                    height={100}
+                  />
                 ) : (
                   <PersonStanding className="size-5" />
                 )}
@@ -88,9 +95,15 @@ export function TeamSwitcher() {
                 onClick={() => setActiveBusiness(team)}
                 className="gap-2 p-2"
               >
-                <div className="flex size-6 items-center justify-center rounded-sm border">
+                <div className="flex size-6 items-center justify-center rounded-sm border bg-white">
                   {team.personType === PersonType.J ? (
-                    <Building2 className="size-4" />
+                    // <Building2 className="size-4" />
+                    <Image
+                      src={activeBusiness.logo}
+                      alt={activeBusiness.name}
+                      width={100}
+                      height={100}
+                    />
                   ) : (
                     <PersonStanding className="size-5" />
                   )}
