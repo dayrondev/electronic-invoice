@@ -26,15 +26,10 @@ export async function createBusiness(
       error: validatedFields.error.flatten().fieldErrors,
     };
   }
-
   const result = await backendFetch("business", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(validatedFields.data),
+    body: formData,
   });
-
   if (!result.ok) {
     return {
       ok: false,

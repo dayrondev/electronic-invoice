@@ -8,19 +8,27 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { UploadService } from './upload.service';
-import { Express } from 'express';
+// import { Express } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { diskStorage } from 'multer';
 import { extname, resolve } from 'path';
 import { existsSync, unlinkSync } from 'fs';
+import { CLOUDINARY_LOGO_FOLDER } from 'src/auth/config/constants';
 
 @Controller('upload')
 export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
   @Public()
-  @Post()
+  @Post('cloudinary')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadImage(@UploadedFile() file: Express.Multer.File) {
+    return this.uploadService.uploadFile(file, CLOUDINARY_LOGO_FOLDER);
+  }
+
+  @Public()
+  @Post('local')
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
@@ -45,7 +53,7 @@ export class UploadController {
   }
 
   @Public()
-  @Delete(':filename')
+  @Delete('local/:filename')
   remove(@Param('filename') filename: string) {
     const filePath = resolve('uploads', filename);
 

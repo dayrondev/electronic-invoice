@@ -78,7 +78,7 @@ export function CreateBusinessForm() {
 
   useEffect(() => {
     if (state?.ok) {
-      //updateUser({ hasBusiness: true }).then(() => router.refresh());
+      updateUser({ hasBusiness: true }).then(() => router.refresh());
     }
   }, [state, router]);
 
@@ -105,7 +105,7 @@ export function CreateBusinessForm() {
   const handleRemoveLogo = () => {
     setLogo(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = ""; // Restablece el valor del input file
+      fileInputRef.current.value = "";
     }
   };
 
